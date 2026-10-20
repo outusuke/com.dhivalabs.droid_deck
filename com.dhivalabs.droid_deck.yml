@@ -10,18 +10,13 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
   - --device=dri
-  # adb opens /dev/bus/usb directly; Flatpak has no narrower USB permission.
   - --device=all
-  - --filesystem=xdg-download
-  - --filesystem=xdg-pictures
-  - --filesystem=xdg-videos
 
 modules:
   - name: platform-tools
     only-arches: [x86_64]
     buildsystem: simple
     build-options:
-      # Google serves platform-tools from a rolling URL, so it can't be checksum-pinned.
       build-args:
         - --share=network
     sources:
