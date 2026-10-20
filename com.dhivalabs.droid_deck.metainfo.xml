@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.dhivalabs.droid_deck</id>
+  <name>DroidDeck</name>
+  <summary>ADB command center for your Linux desktop</summary>
+  <developer id="com.dhivalabs">
+    <name>Dhiva Labs</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <url type="homepage">https://github.com/Dhiva-Labs/DroidDeck</url>
+  <url type="bugtracker">https://github.com/Dhiva-Labs/DroidDeck/issues</url>
+  <launchable type="desktop-id">com.dhivalabs.droid_deck.desktop</launchable>
+  <description>
+    <p>
+      DroidDeck is a Linux desktop GUI around adb: a live device dashboard,
+      logcat viewer, app manager, device file explorer, screen tools,
+      wireless debugging and an interactive shell.
+    </p>
+    <p>
+      adb is bundled, so nothing else needs installing. Screen mirroring
+      needs scrcpy, which is not part of this package.
+    </p>
+  </description>
+  <categories>
+    <category>Development</category>
+    <category>Utility</category>
+  </categories>
+  <content_rating type="oars-1.1"/>
+</component>

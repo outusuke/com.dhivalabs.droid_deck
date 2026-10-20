@@ -1,0 +1,61 @@
+app-id: com.dhivalabs.droid_deck
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+command: droid_deck
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # adb opens /dev/bus/usb directly; Flatpak has no narrower USB permission.
+  - --device=all
+  - --filesystem=xdg-download
+  - --filesystem=xdg-pictures
+  - --filesystem=xdg-videos
+
+modules:
+  - name: platform-tools
+    only-arches: [x86_64]
+    buildsystem: simple
+    build-options:
+      # Google serves platform-tools from a rolling URL, so it can't be checksum-pinned.
+      build-args:
+        - --share=network
+    sources:
+      - type: file
+        path: adb-wrapper
+    build-commands:
+      - curl -fsSL -o platform-tools.zip https://dl.google.com/android/repository/platform-tools-latest-linux.zip
+      - unzip -q platform-tools.zip
+      - mkdir -p /app/lib/platform-tools
+      - cp -r platform-tools/adb platform-tools/lib64 /app/lib/platform-tools/
+      - install -Dm755 adb-wrapper /app/bin/adb
+
+  - name: droiddeck
+    only-arches: [x86_64]
+    buildsystem: simple
+    sources:
+      - type: file
+        url: https://github.com/Dhiva-Labs/DroidDeck/releases/download/v1.0.1/droiddeck_1.0.1_amd64.deb
+        sha256: 17c0accd3593c9f9052d2a7f950b43b80be9bbda8b4f1ecddf16a9fc0c3b3dc6
+        dest-filename: droiddeck.deb
+      - type: file
+        path: com.dhivalabs.droid_deck.desktop
+      - type: file
+        path: com.dhivalabs.droid_deck.metainfo.xml
+    build-commands:
+      - ar x droiddeck.deb
+      - tar -xf data.tar.zst
+      - mkdir -p /app/lib
+      - cp -r usr/lib/droiddeck /app/lib/
+      - ln -s ../lib/droiddeck/droid_deck /app/bin/droid_deck
+      - install -Dm644 com.dhivalabs.droid_deck.desktop -t /app/share/applications
+      - install -Dm644 com.dhivalabs.droid_deck.metainfo.xml -t /app/share/metainfo
+      - |
+        for size in 16 32 48 64 128 256 512; do
+          install -Dm644 usr/share/icons/hicolor/${size}x${size}/apps/droiddeck.png \
+            /app/share/icons/hicolor/${size}x${size}/apps/com.dhivalabs.droid_deck.png
+        done

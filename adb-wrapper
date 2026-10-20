@@ -1,0 +1,3 @@
+#!/bin/sh
+# The sandbox's $HOME is not persistent, so keep adb's RSA key (the phone's "Allow USB debugging?" prompt) in app data.
+HOME="$XDG_DATA_HOME" exec /app/lib/platform-tools/adb "$@"

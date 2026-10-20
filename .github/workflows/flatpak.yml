@@ -1,0 +1,43 @@
+name: Flatpak
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  flatpak:
+    name: Flatpak x86_64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: droiddeck.flatpak
+          manifest-path: com.dhivalabs.droid_deck.yml
+          arch: x86_64
+          cache-key: flatpak-builder-${{ github.sha }}
+          upload-artifact: false
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: flatpak-x86_64
+          path: '*.flatpak'
+          if-no-files-found: error
+
+      - name: Attach to this repo's release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" *.flatpak --clobber --repo "$GITHUB_REPOSITORY"
